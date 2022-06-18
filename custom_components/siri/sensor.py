@@ -125,21 +125,26 @@ class SIRIStopSensor(Entity):
         if response:
             _LOGGER.debug(response)
             
-            time_delta = (datetime.strptime(response['eta'], "%Y-%m-%dT%H:%M:%S+12:00") - datetime.now())
+            time_delta = (datetime.strptime(response['MonitoredCall']['ExpectedArrivalTime'], "%Y-%m-%dT%H:%M:%S+12:00") - datetime.now())
             total_seconds = time_delta.total_seconds()
             calc = total_seconds/60
             
             minutes = calc % 60
             seconds = (calc*60) % 60
 
-            if minutes > 0:
+            if seconds > 60:
             	eta = "%d mins" % (minutes)
             else:
                 eta = "%ds" % (seconds)
             
-            self._state = response['route'] + " in " + eta
+            self._state = str(response['PublishedLineName']) + " in " + eta
             
-            self._state_attributes['Latitude'] = str(response['latitude'])
-            self._state_attributes['Longitude'] = str(response['longitude'])
+            self._state_attributes['Route'] = str(response['PublishedLineName'])
+            self._state_attributes['Direction'] = response['DirectionRef']
+            self._state_attributes['Scheduled'] = response['MonitoredCall']['AimedArrivalTime']
+            self._state_attributes['Estimated'] = response['MonitoredCall']['ExpectedArrivalTime']
+            
+            self._state_attributes['Latitude'] = str(response['MonitoredCall']['VehicleLocationAtStop']['Latitude'])
+            self._state_attributes['Longitude'] = str(response['MonitoredCall']['VehicleLocationAtStop']['Longitude'])
         else:
             _LOGGER.error('Unable to fetch SIRI stops')

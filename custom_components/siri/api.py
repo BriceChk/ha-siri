@@ -26,12 +26,7 @@ class SIRIApi:
             if response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]:
                 if response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit']:
                     if response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]:
-                        data = {
-                            "route": response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]['MonitoredVehicleJourney']['PublishedLineName'],
-                            "eta": response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]['MonitoredVehicleJourney']['MonitoredCall']['ExpectedArrivalTime'],
-                            "latitude": response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]['MonitoredVehicleJourney']['MonitoredCall']['VehicleLocationAtStop']['Latitude'],
-                            "longitude": response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]['MonitoredVehicleJourney']['MonitoredCall']['VehicleLocationAtStop']['Longitude']
-                        }
+                        data = response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]['MonitoredVehicleJourney'];
             return data
         else:
             _LOGGER.error('Failed to fetch SIRI data')
