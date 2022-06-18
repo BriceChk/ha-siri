@@ -6,7 +6,7 @@ import json
 _LOGGER = logging.getLogger(__name__)
 
 class SIRIApi:
-    def __init__(self, token, url, stop):
+    def __init__(self, url, token, stop):
         self._token = token
         self._url = url
         self._stop = stop

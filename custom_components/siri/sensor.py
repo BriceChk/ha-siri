@@ -34,11 +34,19 @@ If you have any issues with this you need to open an issue here:
 
 _LOGGER = logging.getLogger(__name__)
 
+CONF_QUERIES = "queries"
+
+_QUERY_SCHEME = vol.Schema(
+    {
+        vol.Required(CONF_ID): cv.string,
+        vol.Required(CONF_NAME): cv.string
+    }
+)
+
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_TOKEN): cv.string,
     vol.Required(CONF_URL): cv.string,
-    vol.Required(CONF_ID): cv.string,
-    vol.Optional(CONF_NAME): cv.string
+    vol.Required(CONF_QUERIES): [_QUERY_SCHEME]
 })
 
 SCAN_INTERVAL = timedelta(seconds=30)
@@ -47,19 +55,31 @@ async def async_setup_platform(hass, config, async_add_entities,
                                discovery_info=None):
     token = config.get(CONF_TOKEN)
     url = config.get(CONF_URL)
-    stop = config.get(CONF_ID)
-    name = config.get(CONF_NAME)
-    
-    api = SIRIApi(token, url, stop)
 
     _LOGGER.debug('Setting up sensor(s)...')
 
     sensors = []
-    sensors .append(SIRIStopSensor(name, api, stop))
+    
+    for query in config.get(CONF_QUERIES):
+        name = query.get(CONF_NAME)
+        stop = query.get(CONF_ID)
+        
+        api = SIRIApi(url, token, stop)
+        
+        sensors.append(
+            SIRIStopSensor(
+                api,
+                url,
+                token,
+                name,
+                stop
+            )
+        )
+    
     async_add_entities(sensors, True)
 
 class SIRIStopSensor(Entity):
-    def __init__(self, name, api, stop):
+    def __init__(self, api, url, token, name, stop):
         self._name = name
         self._icon = "mdi:bus"
         self._state = ""
@@ -113,7 +133,7 @@ class SIRIStopSensor(Entity):
             seconds = (calc*60) % 60
 
             if minutes > 0:
-            	eta = "%d min %ds" % (minutes, seconds)
+            	eta = "%d mins" % (minutes)
             else:
                 eta = "%ds" % (seconds)
             
