@@ -125,7 +125,7 @@ class SIRIStopSensor(Entity):
         if response:
             _LOGGER.debug(response)
             
-            time_delta = (datetime.strptime(response['MonitoredCall']['ExpectedArrivalTime'], "%Y-%m-%dT%H:%M:%S+12:00") - datetime.now())
+            time_delta = (datetime.strptime(response['MonitoredCall']['ExpectedArrivalTime'], "%Y-%m-%dT%H:%M:%S+13:00") - datetime.now())
             total_seconds = time_delta.total_seconds()
             calc = total_seconds/60
             
