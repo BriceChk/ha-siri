@@ -1,5 +1,6 @@
 """SIRI sensors"""
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
+from dateutil import parser
 
 import logging
 import voluptuous as vol
@@ -125,15 +126,15 @@ class SIRIStopSensor(Entity):
         if response:
             _LOGGER.debug(response)
             
-            time_delta = (datetime.strptime(response['MonitoredCall']['ExpectedArrivalTime'], "%Y-%m-%dT%H:%M:%S+13:00") - datetime.now())
+            time_delta = (parser.parse(response['MonitoredCall']['ExpectedArrivalTime']) - datetime.now(timezone.utc))
             total_seconds = time_delta.total_seconds()
             calc = total_seconds/60
             
             minutes = calc % 60
             seconds = (calc*60) % 60
 
-            if seconds > 60:
-            	eta = "%d mins" % (minutes)
+            if total_seconds > 60:
+            	eta = "%dm %ds" % (minutes, seconds)
             else:
                 eta = "%ds" % (seconds)
             
