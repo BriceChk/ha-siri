@@ -1,11 +1,11 @@
 {
   "domain": "siri",
   "name": "SIRI Stop Monitoring",
-  "version": "1.0.0",
-  "documentation": "https://github.com/codyc1515/hacs_siri",
-  "issue_tracker": "https://github.com/codyc15/hacs_siri/issues",
   "codeowners": ["@codyc1515"],
-  "requirements": [],
+  "dependencies": [],
+  "documentation": "https://github.com/codyc1515/hacs_siri",
   "iot_class": "cloud_polling",
-  "dependencies": []
+  "issue_tracker": "https://github.com/codyc15/hacs_siri/issues",
+  "requirements": [],
+  "version": "1.0.0"
 }
