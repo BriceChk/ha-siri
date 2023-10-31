@@ -29,7 +29,7 @@ sensor:
 4. Restart Home Assistant
 
 ### Manually
-Copy all files in the custom_components/ha-siri folder to your Home Assistant folder *config/custom_components/siri*.
+Copy all files in the custom_components/siri folder to your Home Assistant folder *config/custom_components/siri*.
 
 ## Known issues
 None known.
