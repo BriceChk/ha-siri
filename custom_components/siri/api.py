@@ -1,7 +1,6 @@
 """SIRI API"""
 import logging
 import requests
-import json
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -13,10 +12,9 @@ class SIRIApi:
         
     def get_stops(self):
         headers = {
-            "Ocp-Apim-Subscription-Key": self._token,
             "Cache-Control": "no-cache"
         }
-        response = requests.get(self._url + "?stopcode=" + str(self._stop), headers=headers)
+        response = requests.get(self._url + "?AccountKey=" + self._token +"&MonitoringRef=" + str(self._stop), headers=headers)
         
         data = {}
         if response.status_code == requests.codes.ok:
@@ -26,7 +24,7 @@ class SIRIApi:
             if response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]:
                 if response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit']:
                     if response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]:
-                        data = response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]['MonitoredVehicleJourney'];
+                        data = response['Siri']['ServiceDelivery']['StopMonitoringDelivery'][0]['MonitoredStopVisit'][0]['MonitoredVehicleJourney']
             return data
         else:
             _LOGGER.error('Failed to fetch SIRI data')

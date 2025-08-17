@@ -1,24 +1,17 @@
 """SIRI sensors"""
-from datetime import datetime, time, timedelta, timezone
-from dateutil import parser
-
 import logging
-import voluptuous as vol
+from datetime import datetime, timedelta, timezone
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.components.geo_location import PLATFORM_SCHEMA, GeolocationEvent
-from homeassistant.helpers.entity import Entity
+import voluptuous as vol
+from dateutil import parser
+from homeassistant.components.geo_location import PLATFORM_SCHEMA
 from homeassistant.const import CONF_TOKEN, CONF_URL, CONF_ID, CONF_NAME
-
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+from homeassistant.helpers.entity import Entity
 
 from .api import SIRIApi
-
 from .const import (
-    DOMAIN,
-    SENSOR_NAME
+    DOMAIN
 )
 
 NAME = DOMAIN
@@ -52,8 +45,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
-async def async_setup_platform(hass, config, async_add_entities,
-                               discovery_info=None):
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     token = config.get(CONF_TOKEN)
     url = config.get(CONF_URL)
 
@@ -134,18 +126,14 @@ class SIRIStopSensor(Entity):
             seconds = (calc*60) % 60
 
             if total_seconds > 60:
-            	eta = "%dm %ds" % (minutes, seconds)
+                eta = "%dm %ds" % (minutes, seconds)
             else:
                 eta = "%ds" % (seconds)
             
-            self._state = str(response['PublishedLineName']) + " in " + eta
+            self._state = str(response['DestinationName'][0]['value']) + " dans " + eta
             
-            self._state_attributes['Route'] = str(response['PublishedLineName'])
-            self._state_attributes['Direction'] = response['DirectionRef']
-            self._state_attributes['Scheduled'] = response['MonitoredCall']['AimedArrivalTime']
-            self._state_attributes['Estimated'] = response['MonitoredCall']['ExpectedArrivalTime']
-            
-            self._state_attributes['Latitude'] = str(response['MonitoredCall']['VehicleLocationAtStop']['Latitude'])
-            self._state_attributes['Longitude'] = str(response['MonitoredCall']['VehicleLocationAtStop']['Longitude'])
+            self._state_attributes['Direction'] = str(response['DestinationName'][0]['value'])
+            self._state_attributes['Prévu'] = response['MonitoredCall']['AimedArrivalTime']
+            self._state_attributes['Réel'] = response['MonitoredCall']['ExpectedArrivalTime']
         else:
             _LOGGER.error('Unable to fetch SIRI stops')
